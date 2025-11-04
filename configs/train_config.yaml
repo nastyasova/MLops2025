@@ -1,6 +1,8 @@
-data_path: imdb
-random_seed: 42
-model_name: distilbert-base-uncased
+dataset_name: "stanfordnlp/imdb"
+model_name: "distilbert-base-uncased"
+output_dir: "models/sentiment_model"
 batch_size: 16
-learning_rate: 2e-5
 num_epochs: 3
+learning_rate: 2e-5
+random_seed: 42
+logging_level: "INFO"
