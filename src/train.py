@@ -74,6 +74,13 @@ def main():
     model.save_pretrained(output_dir)
     tokenizer.save_pretrained(output_dir)
     logging.info(f"Модель и токенизатор сохранены в: {output_dir}")
+    metrics_path = os.path.join(output_dir, "metrics.yaml")
+    with open(metrics_path, "w") as f:
+        yaml.safe_dump({k: float(v) for k, v in metrics.items()}, f)
+    logging.info(f"Метрики сохранены в {metrics_path}")
+
+
+
 
 
 if __name__ == "__main__":
