@@ -1,8 +1,10 @@
-dataset_name: "stanfordnlp/imdb"
-model_name: "distilbert-base-uncased"
-output_dir: "models/sentiment_model"
-batch_size: 16
+dataset_name: stanfordnlp/imdb
+model_name: distilbert-base-uncased
+output_dir: models/distilbert-imdb
+batch_size: 8
 num_epochs: 3
-learning_rate: 2e-5
-random_seed: 42
+lr: 2e-5
+seed: 42
 logging_level: "INFO"
+
+
