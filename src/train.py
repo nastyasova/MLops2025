@@ -35,7 +35,7 @@ def main():
     output_dir = config["output_dir"]
     num_epochs = config["num_epochs"]
     batch_size = config["batch_size"]
-    lr = config["lr"]
+    lr = float(config["lr"])
     seed = config["seed"]
     torch.manual_seed(seed)
     if torch.cuda.is_available():
