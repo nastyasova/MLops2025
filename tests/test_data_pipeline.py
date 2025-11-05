@@ -25,7 +25,7 @@ def test_dataset_fields_exist(data_setup):
 
 def test_label_values_in_range(data_setup):
     train_ds, _, _ = data_setup
-    labels = [x["label"] for x in train_ds[:100]]
+    labels = [x["labels"] for x in train_ds[:100]]
     assert all(l in [0, 1] for l in labels), "Метки выходят за допустимый диапазон (0 или 1)!"
 
 
