@@ -19,7 +19,7 @@ def test_dataset_not_empty(data_setup):
 
 def test_dataset_fields_exist(data_setup):
     train_ds, _, _ = data_setup
-    expected_fields = {"input_ids", "attention_mask", "label"}
+    expected_fields = {"input_ids", "attention_mask", "labels"}
     assert expected_fields.issubset(train_ds.features.keys()), "В датасете не хватает нужных полей!"
 
 
