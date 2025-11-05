@@ -47,7 +47,7 @@ def main():
     model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
     training_args = TrainingArguments(
         output_dir=output_dir,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",
         learning_rate=lr,
         per_device_train_batch_size=batch_size,
