@@ -29,20 +29,10 @@ jobs:
           --index-url https://download.pytorch.org/whl/cpu
         pip install --no-cache-dir -r requirements.txt
     
-        # Диагностика: зафиксировать фактические версии
-        python - << 'PY'
-        import pkgutil, importlib
-        for name in ["torch","transformers","accelerate","peft","datasets","tokenizers","numpy"]:
-            try:
-                m = importlib.import_module(name)
-                v = getattr(m, "__version__", "unknown")
-            except Exception as e:
-                v = f"ERROR: {e}"
-            print(f"{name}=={v}")
-        PY
-
-
-
-    - name: Run tests
+    - name: Install test tools
       run: |
-        pytest -v -s tests/
+        pip install pytest==8.4.2 pytest-cov
+    
+    - name: Run tests
+      run: python -m pytest -v -s tests/
+
