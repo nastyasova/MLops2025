@@ -57,11 +57,18 @@ def test_training_and_saving(small_training_setup):
     trainer.save_model(config["output_dir"])
 
     expected_files = [
-        "config.json",
-        "pytorch_model.bin",
-        "trainer_state.json",
+    "config.json",
+    "trainer_state.json",
     ]
-
+    weight_files = ["pytorch_model.bin", "model.safetensors"]
+    
+    found = False
+    for wf in weight_files:
+        if os.path.exists(os.path.join(config["output_dir"], wf)):
+            found = True
+            break
+    assert found, f"Файл весов не найден ни в одном из форматов: {weight_files}"
+    
     for file in expected_files:
         path = os.path.join(config["output_dir"], file)
         assert os.path.exists(path), f"Файл не найден: {path}"
