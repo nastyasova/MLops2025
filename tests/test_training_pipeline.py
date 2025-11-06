@@ -6,6 +6,19 @@ from src.train import compute_metrics
 from src.utils import load_config
 from src.data import load_and_preprocess_data
 from transformers import AutoModelForSequenceClassification, TrainingArguments
+import importlib
+def _ver(name):
+    m = importlib.import_module(name)
+    return getattr(m, "__version__", "unknown")
+
+REQ = {
+    "transformers": "4.41.",
+    "accelerate": "0.31.",
+}
+
+for lib, must_start in REQ.items():
+    v = _ver(lib)
+    assert v.startswith(must_start), f"{lib}=={v} is incompatible; pin to {lib} {must_start}x"
 
 
 @pytest.fixture(scope="module")
