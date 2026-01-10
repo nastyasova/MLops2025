@@ -1,6 +1,7 @@
 import os
 import logging
 import torch
+import yaml
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
@@ -51,7 +52,7 @@ def train_model(model, train_ds, test_ds, config):
 
     training_args = TrainingArguments(
         output_dir=output_dir,
-        eval_strategy="epoch",
+        evaluation_strategy="epoch",
         save_strategy="epoch",
         learning_rate=lr,
         per_device_train_batch_size=batch_size,
