@@ -1,0 +1,25 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: .\.venv-ml\Scripts\python.exe -m scripts.prepare --config 
+      configs/train_config.yaml
+    deps:
+    - path: configs/train_config.yaml
+      hash: md5
+      md5: 87de502482e90a56c6c6968e965625d3
+      size: 399
+    - path: scripts/prepare.py
+      hash: md5
+      md5: ca3858036620d73caba7a99f313c713e
+      size: 1834
+    outs:
+    - path: data/processed/imdb_tokenized
+      hash: md5
+      md5: 8757208ae32bff751f53be715a0204db.dir
+      size: 262041815
+      nfiles: 10
+    - path: data/raw/imdb
+      hash: md5
+      md5: d7fc4570bb309d29bf320d37b880a4e0.dir
+      size: 133219020
+      nfiles: 10
