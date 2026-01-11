@@ -29,11 +29,23 @@ jobs:
             --index-url https://download.pytorch.org/whl/cpu
           pip install --no-cache-dir -r requirements.txt
 
-      - name: Install DVC (S3) and test tools
+      - name: Install test tools
         run: |
-          pip install --no-cache-dir "dvc[s3]"
           pip install --no-cache-dir pytest==8.4.2 pytest-cov
 
+      
+      - name: Install DVC (S3)
+        run: |
+          pip install --no-cache-dir "dvc[s3]==3.66.1"
+
+      - name: Install DVC S3 deps (compatible)
+        run: |
+          pip uninstall -y boto3 botocore s3transfer || true
+          pip install --no-cache-dir \
+            "botocore==1.42.19" \
+            "boto3==1.42.19" \
+            "s3transfer==0.16.0"
+          python -c "import boto3; print('boto3 OK')"
 
       - name: Configure DVC remote (Yandex Object Storage)
         env:
