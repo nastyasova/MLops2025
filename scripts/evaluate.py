@@ -14,12 +14,11 @@ logging.basicConfig(
 )
 
 
-def main(config_path: str):
+def main(config_path: str, metrics_path: str, eval_metrics_path: str):
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
 
     output_dir = cfg["output_dir"]
-    eval_metrics_path = cfg.get("eval_metrics_path", os.path.join(output_dir, "eval_metrics.yaml"))
 
     train_ds, test_ds, _ = load_and_preprocess_data(cfg)
 
@@ -40,17 +39,26 @@ def main(config_path: str):
     )
 
     metrics = trainer.evaluate()
+
+    os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
     os.makedirs(os.path.dirname(eval_metrics_path), exist_ok=True)
+
+    # можно один и тот же словарь писать в оба файла,
+    # или разделить "train metrics" и "eval metrics" — для простоты одинаково:
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        yaml.safe_dump({k: float(v) for k, v in metrics.items()}, f)
 
     with open(eval_metrics_path, "w", encoding="utf-8") as f:
         yaml.safe_dump({k: float(v) for k, v in metrics.items()}, f)
 
-    logging.info(f"Saved eval metrics to: {eval_metrics_path}")
+    logging.info(f"Saved metrics to: {metrics_path} and {eval_metrics_path}")
     logging.info("Evaluate stage done.")
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="configs/train_config.yaml")
+    ap.add_argument("--metrics_path", required=True)
+    ap.add_argument("--eval_metrics_path", required=True)
     args = ap.parse_args()
-    main(args.config)
+    main(args.config, args.metrics_path, args.eval_metrics_path)
