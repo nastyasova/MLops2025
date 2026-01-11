@@ -11,50 +11,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Install dependencies (pinned, CPU)
-      run: |
-        python -m pip install --upgrade pip
-        pip uninstall -y transformers accelerate peft torch torchvision torchaudio tokenizers numpy || true
-        pip install --no-cache-dir "numpy<2.0"
-        pip install --no-cache-dir \
-          torch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 \
-          --index-url https://download.pytorch.org/whl/cpu
-        pip install --no-cache-dir -r requirements.txt
+      - name: Install dependencies (pinned, CPU)
+        run: |
+          python -m pip install --upgrade pip
+          pip uninstall -y transformers accelerate peft torch torchvision torchaudio tokenizers numpy || true
+          pip install --no-cache-dir "numpy<2.0"
+          pip install --no-cache-dir \
+            torch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 \
+            --index-url https://download.pytorch.org/whl/cpu
+          pip install --no-cache-dir -r requirements.txt
 
-    - name: Install test tools
-      run: |
-        pip install pytest==8.4.2 pytest-cov
+      - name: Install DVC (S3) and test tools
+        run: |
+          pip install --no-cache-dir "dvc[s3]"
+          pip install --no-cache-dir pytest==8.4.2 pytest-cov
 
-    - name: Install DVC (S3)
-      run: |
-        pip install "dvc[s3]" boto3
 
-    - name: Configure AWS credentials for Yandex Object Storage
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        mkdir -p ~/.aws
-        cat > ~/.aws/credentials << 'EOF'
-        [yandex]
-        aws_access_key_id=${AWS_ACCESS_KEY_ID}
-        aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}
-        EOF
+      - name: Configure DVC remote (Yandex Object Storage)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ru-central1
+        run: |
+          dvc remote list
+          dvc remote modify yandex endpointurl https://storage.yandexcloud.net
+          dvc remote modify yandex region ru-central1
+          dvc remote modify yandex use_ssl true
+          dvc remote list
 
-    - name: DVC pull
-      env:
-        AWS_PROFILE: yandex
-      run: |
-        dvc remote list
-        dvc pull -v
+      - name: DVC pull
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ru-central1
+        run: |
+          dvc pull -v
 
-    - name: Run tests
-      run: python -m pytest -v -s tests/
+      - name: Run tests
+        run: python -m pytest -v -s tests/
