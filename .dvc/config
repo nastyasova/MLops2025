@@ -1,6 +1,6 @@
 [core]
     remote = yandex
+
 ['remote "yandex"']
     url = s3://mlops2025-dvc
     endpointurl = https://storage.yandexcloud.net
-    profile = yandex
