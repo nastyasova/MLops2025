@@ -1,6 +1,6 @@
 stages:
   prepare:
-    cmd: python -m scripts.prepare --config configs/train_config.yaml
+    cmd: .\.venv-ml\Scripts\python.exe -m scripts.prepare --config configs/train_config.yaml
     deps:
       - scripts/prepare.py
       - configs/train_config.yaml
@@ -9,7 +9,7 @@ stages:
       - data/processed/imdb_tokenized
 
   train:
-    cmd: python -m src.train
+    cmd: .\.venv-ml\Scripts\python.exe -m src.train
     deps:
       - src/train.py
       - src/data.py
@@ -20,7 +20,7 @@ stages:
       - models/distilbert-imdb
 
   evaluate:
-    cmd: python -m scripts.evaluate --config configs/train_config.yaml --metrics_path reports/metrics.yaml --eval_metrics_path reports/eval_metrics.yaml
+    cmd: .\.venv-ml\Scripts\python.exe -m scripts.evaluate --config configs/train_config.yaml --metrics_path reports/metrics.yaml --eval_metrics_path reports/eval_metrics.yaml
     deps:
       - scripts/evaluate.py
       - configs/train_config.yaml
