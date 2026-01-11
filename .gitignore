@@ -217,3 +217,7 @@ models/
 reports/
 mlruns/
 
+# MLflow local tracking
+mlruns/
+mlflow.db
+mlflow_artifacts/

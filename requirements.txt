@@ -7,3 +7,4 @@ datasets==2.19.0
 tokenizers==0.19.1
 scikit-learn==1.4.2
 pyyaml==6.0.1
+mlflow>=2.0.0
