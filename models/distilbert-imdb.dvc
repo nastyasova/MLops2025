@@ -1,6 +1,0 @@
-outs:
-- md5: 7abee8b009b515b1a674fe8ea2811b74.dir
-  size: 267838312
-  nfiles: 3
-  hash: md5
-  path: distilbert-imdb
