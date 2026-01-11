@@ -210,3 +210,10 @@ __marimo__/
 .venv/
 .venv-dvc/
 .venv-ml/
+
+# data/models artifacts (DVC tracks these)
+data/
+models/
+reports/
+mlruns/
+
