@@ -6,8 +6,8 @@ stages:
     deps:
     - path: configs/train_config.yaml
       hash: md5
-      md5: 87de502482e90a56c6c6968e965625d3
-      size: 399
+      md5: a1b083de81926808dc18df87d3846392
+      size: 352
     - path: scripts/prepare.py
       hash: md5
       md5: ca3858036620d73caba7a99f313c713e
@@ -15,11 +15,73 @@ stages:
     outs:
     - path: data/processed/imdb_tokenized
       hash: md5
-      md5: 8757208ae32bff751f53be715a0204db.dir
-      size: 262041815
+      md5: c806b549472f34365c9446143232eeaf.dir
+      size: 198041815
       nfiles: 10
     - path: data/raw/imdb
       hash: md5
       md5: d7fc4570bb309d29bf320d37b880a4e0.dir
       size: 133219020
       nfiles: 10
+  train:
+    cmd: .\.venv-ml\Scripts\python.exe -m src.train
+    deps:
+    - path: configs/train_config.yaml
+      hash: md5
+      md5: a1b083de81926808dc18df87d3846392
+      size: 352
+    - path: data/processed/imdb_tokenized
+      hash: md5
+      md5: c806b549472f34365c9446143232eeaf.dir
+      size: 198041815
+      nfiles: 10
+    - path: src/data.py
+      hash: md5
+      md5: 4e0b617f32e8ad553dfa0cd7c1565005
+      size: 1968
+    - path: src/train.py
+      hash: md5
+      md5: a90b834b91b22f5c1b2d96906bcca168
+      size: 4205
+    - path: src/utils.py
+      hash: md5
+      md5: e1a50c96e04e2fd239037853c2612b65
+      size: 320
+    outs:
+    - path: models/distilbert-imdb
+      hash: md5
+      md5: 8d95d01b3aa7d22b2682f2e1169491a8.dir
+      size: 268777487
+      nfiles: 6
+  evaluate:
+    cmd: .\.venv-ml\Scripts\python.exe -m scripts.evaluate --config 
+      configs/train_config.yaml --metrics_path reports/metrics.yaml 
+      --eval_metrics_path reports/eval_metrics.yaml
+    deps:
+    - path: configs/train_config.yaml
+      hash: md5
+      md5: a1b083de81926808dc18df87d3846392
+      size: 352
+    - path: data/processed/imdb_tokenized
+      hash: md5
+      md5: c806b549472f34365c9446143232eeaf.dir
+      size: 198041815
+      nfiles: 10
+    - path: models/distilbert-imdb
+      hash: md5
+      md5: 8d95d01b3aa7d22b2682f2e1169491a8.dir
+      size: 268777487
+      nfiles: 6
+    - path: scripts/evaluate.py
+      hash: md5
+      md5: 5b7cdc3cc668936a1a00f182cee12b48
+      size: 2204
+    outs:
+    - path: reports/eval_metrics.yaml
+      hash: md5
+      md5: 6c5e7565387f6640f4e1c54e4bc68240
+      size: 168
+    - path: reports/metrics.yaml
+      hash: md5
+      md5: 6c5e7565387f6640f4e1c54e4bc68240
+      size: 168
