@@ -78,13 +78,13 @@ dvc repro
 
 ## Где физически лежат данные и модель
 
-### ❌ Не в Git (версионируется DVC)
+ Не в Git (версионируется DVC)
 
 * `data/raw/imdb`
 * `data/processed/imdb_tokenized`
 * `models/distilbert-imdb`
 
-### ✅ В Git
+ В Git
 
 * код (`src/`, `scripts/`)
 * конфигурации (`configs/`)
