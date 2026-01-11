@@ -31,6 +31,14 @@ def load_data(config):
     """Загружает и токенизирует данные на основе конфигурации."""
     logging.info("Загружаем и подготавливаем данные...")
     train_ds, test_ds, tokenizer = load_and_preprocess_data(config)
+    max_train = config.get("max_train_samples")
+    max_eval = config.get("max_eval_samples")
+    
+    if max_train:
+        train_ds = train_ds.select(range(min(len(train_ds), int(max_train))))
+    if max_eval:
+        test_ds = test_ds.select(range(min(len(test_ds), int(max_eval))))
+
     logging.info(f"Размер обучающей выборки: {len(train_ds)}, тестовой: {len(test_ds)}")
     return train_ds, test_ds, tokenizer
 
@@ -40,6 +48,12 @@ def prepare_model(config):
     model_name = config["model_name"]
     logging.info(f"Загружаем модель: {model_name}")
     model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
+    if config.get("freeze_base", False):
+        logging.info("Freezing base model weights (training only classifier head).")
+        for name, p in model.named_parameters():
+            if not (name.startswith("classifier") or name.startswith("pre_classifier")):
+                p.requires_grad = False
+
     return model
 
 
@@ -52,16 +66,17 @@ def train_model(model, train_ds, test_ds, config):
 
     training_args = TrainingArguments(
         output_dir=output_dir,
-        evaluation_strategy="epoch",
-        save_strategy="epoch",
+        evaluation_strategy="no",
+        save_strategy="no",
         learning_rate=lr,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         num_train_epochs=num_epochs,
         logging_dir="logs",
-        logging_steps=100,
+        logging_steps=50,
         report_to="none",
     )
+
 
     trainer = Trainer(
         model=model,
@@ -104,8 +119,8 @@ def main(config_path="configs/train_config.yaml"):
     train_ds, test_ds, tokenizer = load_data(config)
     model = prepare_model(config)
     trainer = train_model(model, train_ds, test_ds, config)
-    metrics = evaluate_model(trainer)
-    metrics_path = os.path.join(config["output_dir"], "metrics.yaml")
+    # metrics = evaluate_model(trainer)
+    # metrics_path = os.path.join(config["output_dir"], "metrics.yaml")
     with open(metrics_path, "w") as f:
         yaml.safe_dump({k: float(v) for k, v in metrics.items()}, f)
     logging.info(f"Метрики сохранены в {metrics_path}")
