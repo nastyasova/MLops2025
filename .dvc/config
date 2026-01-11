@@ -1,5 +1,6 @@
 [core]
     remote = yandex
+    autostage = true
 ['remote "yandex"']
     url = s3://mlops2025-dvc
     endpointurl = https://storage.yandexcloud.net
