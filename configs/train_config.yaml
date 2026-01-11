@@ -14,3 +14,14 @@ logging_level: "INFO"
 
 train_metrics_path: models/distilbert-imdb/metrics.yaml
 eval_metrics_path: models/distilbert-imdb/eval_metrics.yaml
+
+dataset_name: stanfordnlp/imdb
+model_name: distilbert-base-uncased
+output_dir: models/distilbert-imdb
+
+max_train_samples: 2000
+max_eval_samples: 1000
+
+max_length: 128
+
+freeze_base: true
