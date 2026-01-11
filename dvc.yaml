@@ -1,0 +1,31 @@
+stages:
+  prepare:
+    cmd: python -m scripts.prepare --config configs/train_config.yaml
+    deps:
+      - scripts/prepare.py
+      - configs/train_config.yaml
+    outs:
+      - data/raw/imdb
+      - data/processed/imdb_tokenized
+
+  train:
+    cmd: python -m src.train
+    deps:
+      - src/train.py
+      - src/data.py
+      - src/utils.py
+      - configs/train_config.yaml
+      - data/processed/imdb_tokenized
+    outs:
+      - models/distilbert-imdb
+
+  evaluate:
+    cmd: python -m scripts.evaluate --config configs/train_config.yaml --metrics_path reports/metrics.yaml --eval_metrics_path reports/eval_metrics.yaml
+    deps:
+      - scripts/evaluate.py
+      - configs/train_config.yaml
+      - data/processed/imdb_tokenized
+      - models/distilbert-imdb
+    metrics:
+      - reports/metrics.yaml
+      - reports/eval_metrics.yaml
