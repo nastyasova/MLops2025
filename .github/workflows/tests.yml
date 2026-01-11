@@ -32,7 +32,6 @@ jobs:
       - name: Install test tools
         run: |
           pip install --no-cache-dir pytest==8.4.2 pytest-cov
-
       
       - name: Install DVC (S3)
         run: |
