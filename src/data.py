@@ -33,7 +33,7 @@ def load_and_preprocess_data(config):
                 examples["text"],
                 padding="max_length",
                 truncation=True,
-                max_length=256,
+                max_length=int(config.get("max_length", 256)),
             )
 
         logging.info("Токенизация данных...")
