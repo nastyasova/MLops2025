@@ -35,6 +35,14 @@ Large Movie Review Dataset. This is a dataset for binary sentiment classificatio
    - - 0 — негативный отзыв
    - - 1 — позитивный отзыв
 
+## Структура проекта и соответствие заданиям
+
+| Задание | Что реализовано | Где смотреть |
+|--------|-----------------|--------------|
+| Задание 1 | Версионирование данных и моделей (DVC) | `dvc.yaml`, `dvc.lock`, `data/`, `models/` |
+| Задание 2 | Трекинг экспериментов (MLflow) | `src/train.py`, `mlruns/`, `mlflow.db` |
+| Задание 3 | Docker-образ для офлайн-инференса | `Dockerfile`, `src/predict.py` |
+| Задание 4 | Онлайн-сервис (TorchServe) |  |
 
 
 # DVC-пайплайн для анализа тональности отзывов
@@ -305,5 +313,99 @@ reports/mlflow_runs.csv
 * DVC работает с удалённым S3-хранилищем без Docker
 
 Все команды, приведённые в README, протестированы в Windows-окружении.
+
+
+## Docker — офлайн-инференс модели
+
+Проект содержит Docker-образ для воспроизводимого **офлайн-инференса** обученной модели.
+
+Контейнер запускает скрипт `src/predict.py`, который:
+
+* загружает сохранённую модель с диска,
+* читает входные данные из CSV-файла,
+* выполняет предсказание,
+* сохраняет результаты в CSV-файл.
+
+
+### Сборка Docker-образа
+
+```bash
+docker build -t ml-app:v1 .
+```
+
+Образ собирается на базе `python:3.11-slim` и содержит все необходимые зависимости для инференса модели.
+
+
+
+### Запуск инференса
+
+Пример запуска контейнера с монтированием локальной папки с данными:
+
+```bash
+docker run --rm -v "${PWD}\sample_data:/data" ml-app:v1 \
+  --input_path /data/input.csv \
+  --output_path /data/preds.csv
+```
+
+После выполнения команды файл с предсказаниями будет сохранён в локальной директории:
+
+```text
+sample_data/preds.csv
+```
+
+
+### Формат входных данных
+
+**Вход:** CSV-файл с текстами отзывов.
+
+Обязательное поле:
+
+* `text` — текст отзыва
+
+Пример `input.csv`:
+
+```csv
+text
+I loved this movie; it was amazing!
+Terrible film. Waste of time.
+```
+
+Имя колонки можно изменить параметром `--text_col`.
+
+
+
+### Формат выходных данных
+
+**Выход:** CSV-файл со следующими полями:
+
+* `text` — исходный текст
+* `pred_label` — предсказанный класс (0 — негатив, 1 — позитив)
+* `pred_proba_pos` — вероятность позитивного класса
+
+Пример `preds.csv`:
+
+```csv
+text,pred_label,pred_proba_pos
+I loved this movie; it was amazing!,0,0.13
+Terrible film. Waste of time.,0,0.11
+```
+
+
+### Параметры скрипта predict.py
+
+```bash
+python -m src.predict \
+  --input_path <path_to_input_csv> \
+  --output_path <path_to_output_csv> \
+  [--model_dir models/distilbert-imdb] \
+  [--text_col text] \
+  [--batch_size 32]
+```
+
+
+Для уменьшения размера образа используются исключения в `.dockerignore`,
+в том числе локальные данные и артефакты (`*.csv`, `mlruns`, `sample_data`).
+
+
 
 
